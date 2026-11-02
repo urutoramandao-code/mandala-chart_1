@@ -30,6 +30,7 @@ textarea{width:100%;min-height:80px;box-sizing:border-box}
 table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:.5px solid var(--bd);padding:6px;text-align:left}
 .m{color:var(--mut);font-size:13px}
 #addm{flex-wrap:nowrap}
+.ph #dlg>div,.ph #tip>div{transform:scale(1.6)}
 @media(max-width:640px){#addm{flex-wrap:wrap}#addm input,#addm select{flex:1 1 100%!important}#addm button{flex:1 1 100%!important}input,select,textarea{font-size:16px}button{min-height:40px}main{padding:12px}}
 </style></head><body><main>
 <h1>単価アップ マンダラチャート(面談用)</h1>
@@ -83,6 +84,7 @@ if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.se
 })();
 </script>
 <script>
+(function(){var v=document.querySelector('meta[name=viewport]');if(v&&Math.min(screen.width,screen.height)<720){v.setAttribute("content","width=680, viewport-fit=cover");document.documentElement.className="ph"}})();
 var D=[
 {tab:"Layer 1 PG(〜60万)",role:"PG",price:"〜60万",items:[
 "開発工程の理解|要件定義の流れ/基本設計とは/詳細設計書を読む/製造・単体テスト/結合・総合テスト/リリース手順/保守・障害対応/ウォーターフォールとアジャイル",
@@ -174,7 +176,7 @@ $("cvl").onclick=function(){var p=csvToTxt($("cv").value);if(p.err){$("cvm").tex
 $("cvd").onclick=async function(){var dl=await claude.use("downloads");if(!dl){$("cvm").textContent="保存が使えません。「表示(コピー用)」を使ってください。";return}try{await dl.save({filename:"mandala_chart.csv",data:new Blob(["\uFEFF"+toCsv()],{type:"text/csv"})});$("cvm").textContent="保存しました"}catch(e){if(!e||e.code!="declined")$("cvm").textContent="保存できませんでした: "+((e&&(e.message||e.code))||"")}};
 $("cvs").onclick=function(){$("cv").value=toCsv("\t");$("cvm").textContent="表を表示しました。全体をコピーして、Excelに貼り付けられます。"};
 var openK=null;
-function NR(){return !!(window.matchMedia&&matchMedia("(max-width:640px)").matches)}
+var listMode=false;function NR(){return listMode}
 try{matchMedia("(max-width:640px)").addEventListener("change",function(){render()})}catch(e){}
 function list(m,it,g){g.style.display="block";var L=D[cur],top=h("div","","",g);top.style.cssText="padding:10px 12px;margin:0 0 8px;border-radius:8px;background:var(--ab);color:var(--af);display:flex;justify-content:space-between;align-items:center";h("span","",L.role+" "+L.price,top).style.fontWeight="500";h("span","",lay(m,cur)+" / 64",top);
 it.forEach(function(x,i){var k=cur+"-"+i,open=openK==k,n=cnt(m,cur,i),box=h("div","","",g);box.style.cssText="border:.5px solid var(--bd);border-radius:8px;margin:0 0 8px;overflow:hidden";
@@ -212,6 +214,7 @@ if(!members.length)h("span","m","メンバーを追加してください",mb);
 var tb=$("tabs");tb.textContent="";
 var mm=me();if(mm&&lays(mm).indexOf(cur)<0)cur=lays(mm)[0];
 D.forEach(function(l,i){if(!mm||lays(mm).indexOf(i)<0)return;var b=h("button",i==cur?"on":"",l.tab,tb);b.onclick=function(){cur=i;edk=null;render()}});
+if(mm){var lb=h("button","",listMode?"マンダラ表示に戻す":"一覧表示にする",tb);lb.style.marginLeft="auto";lb.onclick=function(){listMode=!listMode;render()}}
 var s2=$("ly2");s2.textContent="";if(mm)D.forEach(function(l,i){if(lays(mm).indexOf(i)<0){var o=h("option","",l.tab,s2);o.value=i}});$("addrow").style.display=mm&&s2.options.length?"":"none";
 var m=me(),g=$("g");g.textContent="";g.style.display="";
 $("del").style.display=m?"":"none";$("del").textContent=armDel?"もう一度押すと削除されます":"このメンバーを削除";
